@@ -16,13 +16,46 @@ class MyApp extends StatelessWidget {
         colorSchemeSeed: Colors.blue,
         useMaterial3: true,
       ),
-      home: const MovieCatalogManualPage(),
+      home: const MovieCatalogPage(),
     );
   }
 }
 
-class MovieCatalogManualPage extends StatelessWidget {
-  const MovieCatalogManualPage({super.key});
+class MovieCatalogPage extends StatelessWidget {
+  const MovieCatalogPage({super.key});
+
+  final List<Map<String, String>> dataFilm = const [
+    {
+      'judul': 'Inception',
+      'tanggal': '2010-07-15',
+      'rating': '8.4',
+      'poster': 'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_FMjpg_UX1000_.jpg',
+    },
+    {
+      'judul': 'Interstellar',
+      'tanggal': '2014-11-07',
+      'rating': '8.6',
+      'poster': 'https://m.media-amazon.com/images/I/514zBLkyJcL._AC_UF894,1000_QL80_.jpg',
+    },
+    {
+      'judul': 'Tenet',
+      'tanggal': '2020-08-22',
+      'rating': '7.3',
+      'poster': 'https://m.media-amazon.com/images/I/71W2aEcrxxL._AC_UF894,1000_QL80_.jpg',
+    },
+    {
+      'judul': 'The Dark Knight Rises',
+      'tanggal': '2012-07-16',
+      'rating': '7.8',
+      'poster': 'https://m.media-amazon.com/images/I/5151N2hUPiL._AC_UF894,1000_QL80_.jpg',
+    },
+    {
+      'judul': 'Avatar: The Way of Water',
+      'tanggal': '2022-12-14',
+      'rating': '7.6',
+      'poster': 'https://m.media-amazon.com/images/I/71Lvqoov42L.jpg',
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -42,248 +75,103 @@ class MovieCatalogManualPage extends StatelessWidget {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1.0),
           child: Container(
-            color: Colors.grey.withOpacity(0.2),
+            color: Colors.grey.withValues(alpha: 0.2),
             height: 1.0,
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-          
-          // ====== MENGGUNAKAN COLUMN ======
-          child: Column(
-            children: [
-              
-              // --- FILM 1: INCEPTION ---
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 80,
-                      height: 110,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE0E0E0),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: Image.network(
-                          'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_FMjpg_UX1000_.jpg',
-                          fit: BoxFit.cover,
+      body: ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+        itemCount: dataFilm.length,
+        itemBuilder: (context, index) {
+          final film = dataFilm[index];
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // SISI KIRI: POSTER FILM
+                Container(
+                  width: 80,
+                  height: 110,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE0E0E0),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: Image.network(
+                      film['poster']!,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return const Center(
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Center(
+                          child: Icon(Icons.broken_image, color: Colors.grey),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 20),
+                
+                // Desc Movie
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 4),
+                      Text(
+                        film['judul']!,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 20),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      const SizedBox(height: 6),
+                      Text(
+                        film['tanggal']!,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
                         children: [
-                          SizedBox(height: 4),
-                          Text('Inception', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
-                          SizedBox(height: 6),
-                          Text('2010-07-15', style: TextStyle(fontSize: 14, color: Colors.grey)),
-                          SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Icon(Icons.star, color: Colors.amber, size: 18),
-                              SizedBox(width: 6),
-                              Text('8.4', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black87)),
-                            ],
+                          const Icon(
+                            Icons.star,
+                            color: Colors.amber,
+                            size: 18,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            film['rating']!,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black87,
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-
-              // --- FILM 2: INTERSTELLAR ---
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 80,
-                      height: 110,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE0E0E0),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: Image.network(
-                          'https://m.media-amazon.com/images/I/514zBLkyJcL._AC_UF894,1000_QL80_.jpg',
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 4),
-                          Text('Interstellar', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
-                          SizedBox(height: 6),
-                          Text('2014-11-07', style: TextStyle(fontSize: 14, color: Colors.grey)),
-                          SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Icon(Icons.star, color: Colors.amber, size: 18),
-                              SizedBox(width: 6),
-                              Text('8.6', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black87)),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // --- FILM 3: TENET ---
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 80,
-                      height: 110,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE0E0E0),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: Image.network(
-                          'https://m.media-amazon.com/images/I/71W2aEcrxxL._AC_UF894,1000_QL80_.jpg',
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 4),
-                          Text('Tenet', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
-                          SizedBox(height: 6),
-                          Text('2020-08-22', style: TextStyle(fontSize: 14, color: Colors.grey)),
-                          SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Icon(Icons.star, color: Colors.amber, size: 18),
-                              SizedBox(width: 6),
-                              Text('7.3', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black87)),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // --- FILM 4: THE DARK KNIGHT RISES ---
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 80,
-                      height: 110,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE0E0E0),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: Image.network(
-                          'https://m.media-amazon.com/images/I/5151N2hUPiL._AC_UF894,1000_QL80_.jpg',
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 4),
-                          Text('The Dark Knight Rises', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
-                          SizedBox(height: 6),
-                          Text('2012-07-16', style: TextStyle(fontSize: 14, color: Colors.grey)),
-                          SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Icon(Icons.star, color: Colors.amber, size: 18),
-                              SizedBox(width: 6),
-                              Text('7.8', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black87)),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // --- FILM 5: AVATAR: THE WAY OF WATER ---
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 80,
-                      height: 110,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE0E0E0),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: Image.network(
-                          'https://m.media-amazon.com/images/I/71Lvqoov42L.jpg',
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 4),
-                          Text('Avatar: The Way of Water', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
-                          SizedBox(height: 6),
-                          Text('2022-12-14', style: TextStyle(fontSize: 14, color: Colors.grey)),
-                          SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Icon(Icons.star, color: Colors.amber, size: 18),
-                              SizedBox(width: 6),
-                              Text('7.6', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black87)),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-            ],
-          ),
-          // ============================================================
-        ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
