@@ -1,7 +1,8 @@
 import 'package:dio/dio.dart';
 import '../model/movie_model.dart';
+import 'i_movie_service.dart';
 
-class MovieService {
+class MovieService implements IMovieService {
   late final Dio _dio;
   static const String _baseUrl = 'https://api.example.com'; // Replace with real API
 
@@ -34,6 +35,7 @@ class MovieService {
   }
 
   /// Fetch all movies from API
+  @override
   Future<List<Movie>> fetchMovies() async {
     try {
       final response = await _dio.get('/movies');
@@ -45,6 +47,7 @@ class MovieService {
   }
 
   /// Fetch a single movie by ID
+  @override
   Future<Movie> fetchMovieById(String id) async {
     try {
       final response = await _dio.get('/movies/$id');
@@ -55,6 +58,7 @@ class MovieService {
   }
 
   /// Search movies by title
+  @override
   Future<List<Movie>> searchMovies(String query) async {
     try {
       final response = await _dio.get(
@@ -69,6 +73,7 @@ class MovieService {
   }
 
   /// Get trending movies
+  @override
   Future<List<Movie>> getTrendingMovies() async {
     try {
       final response = await _dio.get('/movies/trending');

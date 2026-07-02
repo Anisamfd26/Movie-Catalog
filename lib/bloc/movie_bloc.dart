@@ -1,13 +1,13 @@
 import 'dart:async';
 import '../model/movie_model.dart';
-import '../service/movie_service.dart';
+import '../service/i_movie_service.dart';
 import '../service/local_storage_service.dart';
 import '../service/connectivity_service.dart';
 import 'movie_event.dart';
 import 'movie_state.dart';
 
 class MovieBloc {
-  late final MovieService _movieService;
+  late final IMovieService _movieService;
   late final LocalStorageService _localStorageService;
   late final ConnectivityService _connectivityService;
 
@@ -45,7 +45,7 @@ class MovieBloc {
 
   // Constructor
   MovieBloc({
-    required MovieService movieService,
+    required IMovieService movieService,
     required LocalStorageService localStorageService,
     required ConnectivityService connectivityService,
   }) {
@@ -94,7 +94,9 @@ class MovieBloc {
   Future<void> _fetchMoviesFromApi() async {
     try {
       _emitLoadingState();
+      
       final movies = await _movieService.fetchMovies();
+      
       _allMovies.clear();
       _allMovies.addAll(movies);
 
@@ -123,7 +125,7 @@ class MovieBloc {
 
       if (_allMovies.isEmpty) {
         _emitErrorState(
-            'No movies found. Please check your internet connection.');
+            'No movies found. Please check your internet connection or configure API endpoint.');
       } else {
         _emitMoviesLoadedState(isFromLocalStorage: true);
       }
