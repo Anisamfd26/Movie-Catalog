@@ -1,9 +1,12 @@
 ﻿import 'package:flutter/material.dart';
-
 import 'bloc/movie_bloc.dart';
 import 'page/movie_catalog_page.dart';
+import 'service_locator.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Initialize services
+  await setupServiceLocator();
   runApp(const MyApp());
 }
 
@@ -20,7 +23,12 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _bloc = MovieBloc();
+    // Initialize BLoC with services from service locator
+    _bloc = MovieBloc(
+      movieService: getIt(),
+      localStorageService: getIt(),
+      connectivityService: getIt(),
+    );
   }
 
   @override

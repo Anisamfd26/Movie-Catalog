@@ -30,6 +30,18 @@ class FavoriteMoviesPage extends StatelessWidget {
         stream: bloc.state,
         builder: (context, snapshot) {
           final state = snapshot.data;
+
+          // Handle error state
+          if (state is MoviesError) {
+            return _buildErrorState(context, state.message);
+          }
+
+          // Handle loading state
+          if (state is MoviesLoading) {
+            return _buildLoadingState();
+          }
+
+          // Handle loaded state
           final favorites = state is MoviesLoaded ? state.favorites : const <Movie>[];
 
           if (favorites.isEmpty) {
@@ -189,6 +201,65 @@ class FavoriteMoviesPage extends StatelessWidget {
             'Tambahkan favorite dari halaman detail film.',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 14, color: Colors.black45),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingState() {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+          ),
+          SizedBox(height: 16),
+          Text(
+            'Memuat...',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.black54,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(BuildContext context, String message) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.error_outline,
+            size: 80,
+            color: Colors.red,
+          ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black54,
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton(
+            onPressed: () {
+              bloc.refreshMovies();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Coba Lagi'),
           ),
         ],
       ),

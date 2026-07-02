@@ -31,4 +31,31 @@ class Movie {
       isFavorite: isFavorite ?? this.isFavorite,
     );
   }
+
+  // JSON Serialization
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'releaseDate': releaseDate,
+      'rating': rating,
+      'genre': genre,
+      'description': description,
+      'poster': poster,
+      'isFavorite': isFavorite,
+    };
+  }
+
+  factory Movie.fromJson(Map<String, dynamic> json) {
+    return Movie(
+      id: json['id'] as String? ?? '',
+      title: json['title'] as String? ?? '',
+      releaseDate: json['releaseDate'] as String? ?? '',
+      rating: json['rating'] as String? ?? '',
+      genre: json['genre'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+      poster: json['poster'] as String? ?? '',
+      isFavorite: json['isFavorite'] as bool? ?? false,
+    );
+  }
 }

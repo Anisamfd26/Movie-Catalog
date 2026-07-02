@@ -38,26 +38,79 @@ class MovieCatalogPage extends StatelessWidget {
             },
             icon: const Icon(Icons.favorite, color: Colors.red),
           ),
+          IconButton(
+            onPressed: () {
+              bloc.refreshMovies();
+            },
+            icon: const Icon(Icons.refresh, color: Colors.blue),
+          ),
         ],
       ),
       body: StreamBuilder<MovieState>(
         stream: bloc.state,
         builder: (context, snapshot) {
           final state = snapshot.data;
-          final movies = state is MoviesLoaded ? state.movies : const <Movie>[];
 
-          if (movies.isEmpty) {
-            return _buildEmptyState();
+          // Handle loading state
+          if (state is MoviesLoading) {
+            return _buildLoadingState();
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-            itemCount: movies.length,
-            itemBuilder: (context, index) {
-              final movie = movies[index];
-              return _buildMovieCard(context, movie);
-            },
-          );
+          // Handle error state
+          if (state is MoviesError) {
+            return _buildErrorState(context, state.message);
+          }
+
+          // Handle loaded state
+          if (state is MoviesLoaded) {
+            if (state.movies.isEmpty) {
+              return _buildEmptyState();
+            }
+
+            return Stack(
+              children: [
+                ListView.builder(
+                  padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                  itemCount: state.movies.length,
+                  itemBuilder: (context, index) {
+                    final movie = state.movies[index];
+                    return _buildMovieCard(context, movie);
+                  },
+                ),
+                // Show indicator if loaded from local storage
+                if (state.isFromLocalStorage)
+                  Positioned(
+                    top: 16,
+                    right: 16,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.orange,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.cloud_off, color: Colors.white, size: 16),
+                          SizedBox(width: 6),
+                          Text(
+                            'Offline Mode',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          }
+
+          // Handle initial state or unknown state
+          return _buildEmptyState();
         },
       ),
     );
@@ -216,6 +269,65 @@ class MovieCatalogPage extends StatelessWidget {
             'Tidak ada data film saat ini.',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 16, color: Colors.black54),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingState() {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+          ),
+          SizedBox(height: 16),
+          Text(
+            'Memuat film...',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.black54,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(BuildContext context, String message) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.error_outline,
+            size: 80,
+            color: Colors.red,
+          ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black54,
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton(
+            onPressed: () {
+              bloc.refreshMovies();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Coba Lagi'),
           ),
         ],
       ),
